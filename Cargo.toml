@@ -14,3 +14,5 @@ veyra-timeline = { path = "crates/veyra-timeline" }
 veyra-media = { path = "crates/veyra-media" }
 veyra-render = { path = "crates/veyra-render" }
 veyra-core = { path = "crates/veyra-core" }
+veyra-source = { path = "crates/veyra-source" }
+veyra-history = { path = "crates/veyra-history" }

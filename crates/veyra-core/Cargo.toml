@@ -9,3 +9,5 @@ serde_json.workspace = true
 veyra-project.workspace = true
 veyra-timeline.workspace = true
 veyra-render.workspace = true
+veyra-source.workspace = true
+veyra-history.workspace = true

@@ -3,7 +3,7 @@ use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::path::Path;
 use std::process::Command;
-use veyra_project::Project;
+use veyra_project::{Composition, Fps, Project};
 
 /// Literal `<Video src="...">` values in src/. (Dynamic src values are not detected.)
 pub fn scan_video_sources(p: &Project) -> Vec<String> {
@@ -28,37 +28,39 @@ fn ffmpeg(p: &Project, args: &[String]) -> Result<(), String> {
     let o = Command::new("ffmpeg").current_dir(&p.root).args(args).output().map_err(|e| format!("ffmpeg: {e}"))?;
     if o.status.success() { Ok(()) } else { Err(format!("ffmpeg failed: {}", String::from_utf8_lossy(&o.stderr).trim())) }
 }
-pub fn extract_frames(p: &Project, src: &str) -> Result<usize, String> {
+pub fn extract_frames(p: &Project, src: &str, fps: Fps) -> Result<usize, String> {
     p.resolve(src)?;
     let out = p.root.join(".veyra/media").join(media_key(src));
     let _ = std::fs::remove_dir_all(&out);
     std::fs::create_dir_all(&out).map_err(|e| e.to_string())?;
     let pat = format!(".veyra/media/{}/%05d.png", media_key(src));
-    let args: Vec<String> = ["-y", "-loglevel", "error", "-i", src, "-vf", &format!("fps={}", p.config.fps), "-start_number", "0", &pat].iter().map(|s| s.to_string()).collect();
+    let args: Vec<String> = ["-y", "-loglevel", "error", "-i", src, "-vf", &format!("fps={}", fps.arg()), "-start_number", "0", &pat].iter().map(|s| s.to_string()).collect();
     ffmpeg(p, &args)?;
     Ok(std::fs::read_dir(out).map(|r| r.count()).unwrap_or(0))
 }
 
 #[derive(Deserialize)] #[serde(rename_all = "camelCase")]
 struct AudioClip { src: String, from_frame: u32, volume: f64 }
-#[derive(Deserialize)] struct AudioPlan { fps: u32, duration: u32, clips: Vec<AudioClip> }
+#[derive(Deserialize)] struct AudioPlan { clips: Vec<AudioClip> }
 
-/// Frames (+ audio plan) -> exports/out.mp4 in a single FFmpeg call; audio is delayed per clip and trimmed to video length.
-pub fn mux(p: &Project) -> Result<String, String> {
+/// Frames (+ audio plan) -> exports/out.mp4 in a single FFmpeg call. Audio positions and length are in integer samples
+/// derived from the exact rational fps, so A/V sync does not drift even at 30000/1001.
+pub fn mux(p: &Project, comp: &Composition) -> Result<String, String> {
+    const RATE: u32 = 48000;
     let plan: AudioPlan = serde_json::from_str(&p.read_file(".veyra/audio.json")?).map_err(|e| format!("audio.json: {e}"))?;
     std::fs::create_dir_all(p.root.join("exports")).map_err(|e| e.to_string())?;
-    let secs = plan.duration as f64 / plan.fps as f64;
+    let total = comp.fps.frames_to_samples(comp.duration_in_frames as u64, RATE);
     let mut a: Vec<String> = ["-y", "-loglevel", "error", "-framerate"].iter().map(|s| s.to_string()).collect();
-    a.extend([plan.fps.to_string(), "-i".into(), ".veyra/frames/%05d.png".into()]);
+    a.extend([comp.fps.arg(), "-i".into(), ".veyra/frames/%05d.png".into()]);
     for c in &plan.clips { p.resolve(&c.src)?; a.extend(["-i".into(), c.src.clone()]); }
     if !plan.clips.is_empty() {
         let mut f: Vec<String> = plan.clips.iter().enumerate().map(|(i, c)| format!(
-            "[{}:a]aresample=48000,adelay={}:all=1,volume={}[a{i}]", i + 1, (c.from_frame as f64 / plan.fps as f64 * 1000.0).round() as i64, c.volume)).collect();
+            "[{}:a]aresample={RATE},adelay={}S:all=1,volume={}[a{i}]", i + 1, comp.fps.frames_to_samples(c.from_frame as u64, RATE), c.volume)).collect();
         let ins: String = (0..plan.clips.len()).map(|i| format!("[a{i}]")).collect();
-        f.push(format!("{ins}amix=inputs={}:normalize=0,atrim=0:{secs},apad=whole_dur={secs}[aout]", plan.clips.len()));
+        f.push(format!("{ins}amix=inputs={}:normalize=0,atrim=end_sample={total},apad=whole_len={total}[aout]", plan.clips.len()));
         a.extend(["-filter_complex".into(), f.join(";"), "-map".into(), "0:v".into(), "-map".into(), "[aout]".into(), "-c:a".into(), "aac".into()]);
     }
-    a.extend(["-pix_fmt".into(), "yuv420p".into(), "-t".into(), secs.to_string(), "exports/out.mp4".into()]);
+    a.extend(["-pix_fmt".into(), "yuv420p".into(), "-frames:v".into(), comp.duration_in_frames.to_string(), "exports/out.mp4".into()]);
     ffmpeg(p, &a)?;
     Ok("exports/out.mp4".into())
 }

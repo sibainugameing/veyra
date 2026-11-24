@@ -2,7 +2,7 @@
 <style>
 :root{--bg:#0d0f17;--pn:#151826;--tx:#e8eaf3;--mu:#8a90a8;--bd:#272b3d;--ac:#8c74ff;--cd:#1c2033}
 *{box-sizing:border-box}html,body,#root{height:100%;margin:0}body{background:var(--bg);color:var(--tx);font:13px/1.4 system-ui,"Hiragino Sans",sans-serif;overflow:hidden}
-.app{display:grid;height:100%;grid-template-columns:190px 1fr 480px;grid-template-rows:38px 1fr 200px 26px;gap:1px;background:var(--bd)}
+.app{display:grid;height:100%;grid-template-columns:190px 1fr 480px;grid-template-rows:38px 1fr 310px 26px;gap:1px;background:var(--bd)}
 .app>*{background:var(--pn);min-height:0;min-width:0;overflow:hidden}
 .top{grid-column:1/4;display:flex;align-items:center;gap:10px;padding:0 12px}.top b{color:var(--ac)}.sp{flex:1}
 button{background:var(--cd);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:4px 10px;font:inherit;cursor:pointer}button.p{background:var(--ac);border-color:var(--ac);color:#fff}
@@ -13,12 +13,21 @@ h4{margin:0;padding:8px 10px 4px;font-size:10px;letter-spacing:.08em;text-transf
 .ctl{display:flex;gap:8px;align-items:center;padding:4px 8px}.ctl input{flex:1}
 .insp{padding:4px 12px;overflow:auto;flex:1}.insp dl{display:grid;grid-template-columns:70px 1fr;gap:3px 8px;margin:6px 0}.insp dt{color:var(--mu)}.insp dd{margin:0}
 .tl{grid-column:1/4;overflow:auto;position:relative}.tlin{position:relative;margin:0 10px 8px 130px}
-.row{position:relative;height:20px;margin-bottom:3px;background:var(--cd);border-radius:3px}.lab{position:absolute;right:100%;margin-right:8px;width:120px;text-align:right;color:var(--mu);font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:20px}
+.row{position:relative;height:20px;margin-bottom:2px;background:var(--cd);border-radius:3px}.lab{position:absolute;right:100%;margin-right:8px;width:120px;text-align:right;color:var(--mu);font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:20px}
 .clip{position:absolute;top:2px;height:16px;border-radius:3px;cursor:pointer;font-size:10px;padding:0 4px;overflow:hidden;white-space:nowrap;line-height:16px;opacity:.8}
 .clip.sel{opacity:1;outline:2px solid #fff}.k-sequence{background:#6b4cff}.k-video{background:#0e9f6e}.k-audio{background:#d97706}.k-image{background:#db2777}
 .ph{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;pointer-events:none;z-index:3}
 .out{grid-column:1/4;display:flex;align-items:center;gap:12px;padding:0 12px;color:var(--mu);font-size:12px}.err{color:#f87171}
 .bar{width:140px;height:6px;background:var(--cd);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.chips button{padding:2px 8px;font-size:12px}.chips button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.pr{display:grid;grid-template-columns:78px 1fr;gap:6px;align-items:center;margin:3px 0;color:var(--mu)}
+.pr input{width:100%;background:var(--cd);color:var(--tx);border:1px solid var(--bd);border-radius:4px;padding:3px 6px;font:inherit}.pr input:disabled{opacity:.55;font-family:ui-monospace,monospace;font-size:11px}
+.sec{margin:8px 0 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.k-transition{background:#0891b2}.clip.ed{cursor:grab;opacity:1}.clip.ed:active,.clip.dragging{cursor:grabbing;outline:2px solid #fff;z-index:2}
+.clip.ed::before,.clip.ed::after{content:"";position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize;background:rgba(255,255,255,.28)}.clip.ed::before{left:0;border-radius:3px 0 0 3px}.clip.ed::after{right:0;border-radius:0 3px 3px 0}
+.row.th{background:transparent;height:18px;margin-top:6px}.row.th .lab{color:var(--tx);font-weight:600}.tname{position:absolute;left:4px;top:1px;font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+.ruler{position:relative;height:20px;margin-bottom:2px;border-bottom:1px solid var(--bd)}.tick{position:absolute;top:2px;font-size:10px;color:var(--mu);padding-left:3px;border-left:1px solid var(--bd);height:16px}
+.mk{position:absolute;top:3px;margin-left:-5px;font-size:11px;color:#f59e0b;cursor:default}
 #ed{height:calc(100% - 28px)}
 </style></head><body><div id="root"></div>
 <script src="vs/loader.js"></script>

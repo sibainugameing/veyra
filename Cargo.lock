@@ -189,9 +189,20 @@ name = "veyra-core"
 version = "0.0.1"
 dependencies = [
  "serde_json",
+ "veyra-history",
  "veyra-project",
  "veyra-render",
+ "veyra-source",
  "veyra-timeline",
+]
+
+[[package]]
+name = "veyra-history"
+version = "0.0.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "veyra-project",
 ]
 
 [[package]]
@@ -222,11 +233,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "veyra-source"
+version = "0.0.1"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "veyra-timeline"
 version = "0.0.1"
 dependencies = [
  "serde",
  "serde_json",
+ "veyra-project",
 ]
 
 [[package]]
