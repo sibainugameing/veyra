@@ -1,1 +1,0 @@
-{ "id": "demo", "name": "Demo", "entry": "src/main.tsx", "width": 1280, "height": 720, "fps": 30, "durationInFrames": 90, "runtime": "0.0.1" }
