@@ -1,0 +1,14 @@
+[package]
+name = "veyra-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde_json.workspace = true
+veyra-project.workspace = true
+veyra-core.workspace = true
+
+[[bin]]
+name = "veyra"
+path = "src/main.rs"

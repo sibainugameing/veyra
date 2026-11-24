@@ -1,0 +1,11 @@
+[package]
+name = "veyra-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde_json.workspace = true
+veyra-project.workspace = true
+veyra-timeline.workspace = true
+veyra-render.workspace = true
